@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toolbox Meeting Form (Simplified) – HWE-QEHSP-11-F05</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      background: #c8c8c8;
+      color: #000;
+      padding: 30px 50px;
+    }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 18px 20px 14px;
+      box-shadow: 0 3px 16px rgba(0,0,0,0.25);
+    }
+
+    /* ══════════════════════════════
+       HEADER
+    ══════════════════════════════ */
+    .hdr { width: 100%; border-collapse: collapse; border: 1px solid #000; }
+    .hdr td { border: 1px solid #000; padding: 0; vertical-align: middle; }
+
+    .td-company {
+      text-align: center; font-weight: 700; font-size: 13px;
+      line-height: 1.6; padding: 8px 10px !important; width: 27%;
+    }
+    .td-sysforms {
+      background-color: #1a3c6e; color: #fff; text-align: center;
+      font-weight: 700; font-size: 12px; letter-spacing: 1.5px;
+      padding: 7px 10px !important; border-bottom: 1px solid #fff !important;
+    }
+    .td-formtitle {
+      text-align: center; font-weight: 700; font-size: 15px;
+      padding: 8px 10px !important;
+    }
+    .td-meta { text-align: center; font-size: 12px; padding: 5px 8px !important; }
+
+    /* ══════════════════════════════
+       MAIN FORM
+    ══════════════════════════════ */
+    .form-tbl {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid #000; border-top: none;
+    }
+    .form-tbl td {
+      border: 1px solid #000; padding: 7px 9px;
+      vertical-align: middle; font-size: 14px;
+    }
+    .fi {
+      border: none; outline: none; width: 100%;
+      font-family: inherit; font-size: 14px;
+      padding: 1px 2px; background: transparent; color: #000;
+    }
+    .fi:focus { background: #eef3ff; }
+    .lbl { white-space: nowrap; }
+
+    /* Conducted by */
+    .td-conducted-lbl { white-space: nowrap; vertical-align: middle; }
+    .td-conducted { vertical-align: middle; padding: 6px 9px !important; }
+    .conducted-row { display: flex; gap: 8px; align-items: stretch; }
+    .c-fields { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .c-inp {
+      border: none; border-bottom: 1px solid #999; outline: none;
+      font-family: inherit; font-size: 14px; padding: 2px 2px;
+      background: transparent; flex: 1; min-width: 80px;
+    }
+    .c-inp:focus { background: #eef3ff; border-bottom-color: #1a3c6e; }
+
+    /* Checklist */
+    .td-q { font-size: 14px; padding: 9px 9px !important; vertical-align: middle; }
+    .td-yn {
+      white-space: nowrap; text-align: right; vertical-align: middle;
+      width: 120px; padding: 8px 10px 8px 4px !important;
+    }
+    .yn-lbl {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-left: 10px; font-size: 14px; cursor: pointer; user-select: none;
+    }
+    .yn-lbl input[type="checkbox"] {
+      width: 15px; height: 15px; margin: 0; cursor: pointer;
+      accent-color: #000; flex-shrink: 0;
+    }
+
+    /* Subjects */
+    .td-sub { vertical-align: top; padding: 7px 9px 8px !important; }
+    .sub-lbl { font-size: 14px; margin-bottom: 4px; }
+    .sub-ta {
+      border: none; outline: none; width: 100%;
+      min-height: 80px;
+      font-family: inherit; font-size: 14px;
+      resize: none; background: transparent; display: block;
+      overflow: hidden;
+    }
+    .sub-ta:focus { background: #eef3ff; }
+
+    /* Photo upload */
+    .td-photo { vertical-align: top; padding: 7px 9px 8px !important; }
+    .photo-lbl { font-size: 14px; margin-bottom: 6px; }
+    .photo-upload-btn {
+      display: inline-block; padding: 6px 14px;
+      background: #f0f0f0; border: 1px solid #bbb;
+      border-radius: 3px; cursor: pointer;
+      font-size: 13px; color: #333;
+    }
+    .photo-upload-btn:hover { background: #e0e8ff; border-color: #1a3c6e; color: #1a3c6e; }
+    #photo-input { display: none; }
+    .photo-preview {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
+      justify-content: center;
+    }
+    .photo-thumb-wrap {
+      position: relative; display: inline-block;
+    }
+    .photo-thumb-wrap img {
+      width: 160px; height: 120px; object-fit: cover;
+      border: 1px solid #ccc; border-radius: 3px; display: block;
+    }
+    .photo-thumb-remove {
+      position: absolute; top: 2px; right: 2px;
+      background: rgba(0,0,0,0.55); color: #fff;
+      border: none; border-radius: 50%;
+      width: 18px; height: 18px; font-size: 11px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+    .photo-thumb-remove:hover { background: #c00; }
+
+    /* Conducted-by signature — tap-to-sign (same behaviour as worker cells) */
+    .sig-td-conducted {
+      position: relative; cursor: pointer;
+      border: 1px solid #bbb; background: #f8f8f8;
+      border-radius: 2px; flex-shrink: 0;
+      width: 180px;
+      margin-left: auto;
+    }
+    .sig-td-conducted canvas { display: block; width: 180px; height: 100%; }
+    .sig-td-conducted:hover { background: #f0f4ff; }
+
+    /* ══════════════════════════════
+       ATTENDANCE TABLE
+    ══════════════════════════════ */
+    .att { width: 100%; border-collapse: collapse; }
+    .att th {
+      border: 1px solid #000; padding: 6px 7px;
+      font-weight: 700; font-size: 14px; background: #fff;
+    }
+    .att th.sn  { text-align: center; width: 40px; }
+    .att th.sig { text-align: center; width: 150px; }
+    .att th.nm  { text-align: left; }
+    .att td { border: 1px solid #000; padding: 0; vertical-align: middle; }
+    .att .sn-td { text-align: center; font-size: 14px; padding: 3px 4px; width: 40px; }
+    .att .nm-td input {
+      border: none; outline: none; width: 100%;
+      font-family: inherit; font-size: 13px;
+      padding: 5px 6px; background: transparent;
+    }
+    .att .nm-td input:focus { background: #eef3ff; }
+
+    /* Signature cell — tap-to-open */
+    .att .sig-td {
+      width: 150px; height: 36px; padding: 0 !important;
+      position: relative; cursor: pointer;
+    }
+    .att .sig-td canvas { display: block; width: 150px; height: 36px; }
+    .att-sig-ph {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 10px; color: #bbb;
+      pointer-events: none; white-space: nowrap;
+    }
+    /* Hover hint */
+    .att .sig-td:hover { background: #f0f4ff; }
+
+    /* ══════════════════════════════
+       SIGNATURE MODAL
+    ══════════════════════════════ */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65); z-index: 2000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 10px;
+      padding: 20px 22px 18px;
+      width: min(520px, 95vw);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+    .modal-title {
+      font-size: 15px; font-weight: 700;
+      color: #1a3c6e; margin-bottom: 12px;
+    }
+    .modal-canvas-wrap {
+      position: relative;
+      border: 1.5px solid #aaa; border-radius: 6px;
+      background: #fafafa; overflow: hidden;
+    }
+    #modal-cv {
+      display: block; width: 100%;
+      height: 220px; cursor: crosshair; touch-action: none;
+    }
+    .modal-canvas-ph {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 13px; color: #ccc; pointer-events: none;
+    }
+    .modal-footer {
+      display: flex; gap: 10px;
+      justify-content: flex-end; margin-top: 14px;
+    }
+    .btn-m {
+      padding: 9px 22px; border-radius: 5px;
+      font: 600 14px/1 Arial, sans-serif;
+      cursor: pointer; border: none;
+    }
+    .btn-m-clear  { background: #f5f5f5; color: #555; border: 1px solid #ccc; }
+    .btn-m-clear:hover  { background: #ffe0e0; color: #c00; border-color: #c00; }
+    .btn-m-cancel { background: #eee; color: #444; border: 1px solid #bbb; }
+    .btn-m-cancel:hover { background: #ddd; }
+    .btn-m-done   { background: #1a3c6e; color: #fff; }
+    .btn-m-done:hover   { background: #14305a; }
+
+    /* ══════════════════════════════
+       ACTION BUTTONS
+    ══════════════════════════════ */
+    .actions {
+      display: flex; gap: 10px; justify-content: flex-end;
+      padding: 12px 0 2px; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 7px 18px; border-radius: 3px;
+      font: 600 12px/1 Arial, sans-serif; cursor: pointer; border: none;
+    }
+    .btn-reset { background: #eee; color: #333; border: 1px solid #bbb; }
+    .btn-reset:hover { background: #ddd; }
+    .btn-print { background: #1a3c6e; color: #fff; }
+    .btn-print:hover { background: #14305a; }
+    .btn-save  { background: #256e35; color: #fff; }
+    .btn-save:hover { background: #1b5228; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 18px; right: 18px;
+      background: #256e35; color: #fff;
+      padding: 8px 15px; border-radius: 4px;
+      font-size: 13px; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s; z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+
+    /* ══════════════════════════════
+       PRINT — one A4 page
+    ══════════════════════════════ */
+    @page { size: A4 portrait; margin: 9mm 11mm; }
+
+    @media print {
+      html, body {
+        background: #fff; padding: 0; margin: 0;
+        font-size: 13px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .page { box-shadow: none; padding: 0; max-width: 100%; }
+      .actions    { display: none; }
+      .modal-overlay { display: none !important; }
+      .att-sig-ph { display: none; }
+
+      .td-sysforms { background-color: #1a3c6e !important; color: #fff !important; }
+
+      /* Header */
+      .hdr td       { font-size: 11px !important; padding: 4px 6px !important; }
+      .td-meta      { font-size: 11px !important; padding: 4px 5px !important; }
+      .td-company   { font-size: 11px !important; padding: 6px 8px !important; }
+      .td-formtitle { font-size: 13px !important; padding: 5px 8px !important; }
+      .td-sysforms  { font-size: 11px !important; padding: 5px 8px !important; }
+
+      /* Form body */
+      .form-tbl td    { font-size: 13px !important; padding: 5px 7px !important; }
+      .fi             { font-size: 13px !important; }
+      .td-conducted-lbl { font-size: 12px !important; padding: 4px 6px !important; }
+      .td-conducted     { padding: 4px 6px !important; }
+      .c-inp            { font-size: 12px !important; }
+
+      .td-q   { font-size: 13px !important; padding: 6px 7px !important; }
+      .td-yn  { font-size: 13px !important; padding: 6px 7px !important; width: 115px !important; }
+      .yn-lbl { font-size: 13px !important; margin-left: 6px !important; }
+      .yn-lbl input[type="checkbox"] { width: 13px !important; height: 13px !important; }
+
+      /* Subjects — generous writing space */
+      .td-sub  { padding: 4px 6px !important; }
+      .sub-lbl { font-size: 13px !important; margin-bottom: 2px !important; }
+      .sub-ta  { font-size: 13px !important; min-height: 80px !important; }
+
+      /* Photo upload — show in print */
+      .td-photo { padding: 4px 6px !important; }
+      .photo-lbl { font-size: 12px !important; margin-bottom: 4px !important; }
+      .photo-upload-btn { display: none !important; }
+      #photo-input { display: none !important; }
+      .photo-thumb-remove { display: none !important; }
+      .photo-preview { gap: 6px !important; }
+      .photo-thumb-wrap img {
+        width: 160px !important; height: 120px !important;
+        object-fit: cover !important;
+        border: 1px solid #ccc !important;
+      }
+
+      /* Attendance */
+      .att th             { font-size: 12px !important; padding: 4px 5px !important; }
+      .att .sn-td         { font-size: 12px !important; padding: 2px 3px !important; }
+      .att .nm-td input   { font-size: 12px !important; padding: 3px 4px !important; }
+      .att .sig-td        { height: 30px !important; width: 135px !important; }
+      .att .sig-td canvas { height: 30px !important; width: 135px !important; }
+
+      /* Conducted-by tap-to-sign canvas */
+      .sig-td-conducted        { width: 155px !important; }
+      .sig-td-conducted canvas { width: 155px !important; height: 100% !important; }
+
+    }
+
+    @media (max-width: 580px) {
+      body { padding: 8px 4px; }
+      .page { padding-left: 10px; padding-right: 10px; }
+      .td-yn { width: 100px !important; padding: 6px 6px 6px 2px !important; }
+      .yn-lbl { margin-left: 6px !important; }
+
+      /* Stack [name+desig col] then sig below on narrow screens */
+      .conducted-row { flex-direction: column; gap: 6px; align-items: stretch; }
+      .c-fields { gap: 6px; }
+      /* Sig tap area: full width, fixed comfortable height on mobile */
+      .sig-td-conducted {
+        width: 100% !important; height: 52px !important;
+        margin-left: 0;
+      }
+      .sig-td-conducted canvas { width: 100% !important; height: 52px !important; }
+
+      /* Attendance table on narrow screens */
+      .att th.sig  { width: 110px; font-size: 12px; }
+      .att .sig-td { width: 110px; }
+      .att .sig-td canvas { width: 110px !important; }
+      .att .nm-td input { font-size: 12px; }
+      .att .sn-td { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══════════ HEADER ══════════ -->
+  <table class="hdr">
+    <tbody>
+      <tr>
+        <td class="td-company" rowspan="2">HWEE WAH<br>ENGINEERING PTE LTD</td>
+        <td class="td-sysforms">SYSTEM FORMS</td>
+      </tr>
+      <tr>
+        <td class="td-formtitle">TOOLBOX MEETING FORM</td>
+      </tr>
+      <tr>
+        <td class="td-meta" style="border-right:1px solid #000;">HWE-QEHSP-11-F05</td>
+        <td style="padding:0; border:none;">
+          <table style="width:100%; border-collapse:collapse; height:100%;">
+            <tr>
+              <td class="td-meta">Date: 03.07.2023</td>
+              <td class="td-meta" style="border-left:1px solid #000;">Revision 00</td>
+              <td class="td-meta" style="border-left:1px solid #000;">Page 1 of 1</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══════════ MAIN FORM ══════════ -->
+  <table class="form-tbl">
+    <colgroup>
+      <col style="width:105px;">
+      <col>
+      <col style="width:58px;">
+      <col style="width:120px;">
+    </colgroup>
+    <tbody>
+
+      <!-- Project -->
+      <tr>
+        <td class="lbl">Project:</td>
+        <td colspan="3"><input class="fi" type="text" id="project" /></td>
+      </tr>
+
+      <!-- Date -->
+      <tr>
+        <td class="lbl">Date:</td>
+        <td colspan="3"><input class="fi" type="date" id="date" /></td>
+      </tr>
+
+      <!-- Conducted by -->
+      <tr>
+        <td class="lbl td-conducted-lbl">Conducted by:</td>
+        <td colspan="3" class="td-conducted">
+          <div class="conducted-row">
+            <div class="c-fields">
+              <input class="c-inp" type="text" id="c-name" placeholder="Name" />
+              <input class="c-inp" type="text" id="c-desig" placeholder="Designation" />
+            </div>
+            <div class="sig-td-conducted" onclick="openModal('sig0','Conducted by')">
+              <canvas id="sig0" width="180" height="64"></canvas>
+              <span class="att-sig-ph">Tap to sign</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Q1 -->
+      <tr>
+        <td colspan="3" class="td-q">Are all workers feeling well and fit for work?</td>
+        <td class="td-yn">
+          <label class="yn-lbl"><input type="checkbox" id="q1y"> Yes</label>
+          <label class="yn-lbl"><input type="checkbox" id="q1n"> No</label>
+        </td>
+      </tr>
+
+      <!-- Q2 -->
+      <tr>
+        <td colspan="3" class="td-q">Are all workers equipped with the necessary PPE for the work?</td>
+        <td class="td-yn">
+          <label class="yn-lbl"><input type="checkbox" id="q2y"> Yes</label>
+          <label class="yn-lbl"><input type="checkbox" id="q2n"> No</label>
+        </td>
+      </tr>
+
+      <!-- Subjects Discussed -->
+      <tr>
+        <td colspan="4" class="td-sub">
+          <div class="sub-lbl">Subjects Discussed (Include the risk associated with the work/ task):</div>
+          <textarea class="sub-ta" id="subjects"></textarea>
+        </td>
+      </tr>
+
+      <!-- Photo Upload -->
+      <tr>
+        <td colspan="4" class="td-photo">
+          <div class="photo-lbl">Toolbox Meeting Photo:</div>
+          <label class="photo-upload-btn" for="photo-input">&#128247; Attach Photo(s)</label>
+          <input type="file" id="photo-input" accept="image/*" multiple />
+          <div id="photo-preview" class="photo-preview"></div>
+        </td>
+      </tr>
+
+      <!-- Attendance -->
+      <tr>
+        <td colspan="4" style="padding:0;">
+          <table class="att">
+            <thead>
+              <tr>
+                <th class="sn">SN</th>
+                <th class="nm">Name of Worker</th>
+                <th class="sig">Signature</th>
+              </tr>
+            </thead>
+            <tbody id="att-body"></tbody>
+          </table>
+          <div style="padding:6px 8px; border:1px solid #000; border-top:none; background:#fafafa;">
+            <button class="btn btn-reset" style="font-size:12px; padding:5px 14px;" onclick="addAttRow()">+ Add Row</button>
+            <span id="att-count-lbl" style="font-size:12px; color:#666; margin-left:8px;"></span>
+          </div>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <!-- ══════════ BUTTONS ══════════ -->
+  <div class="actions">
+    <button class="btn btn-reset" onclick="resetForm()">Reset Form</button>
+    <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ══════════ SIGNATURE MODAL ══════════ -->
+<div class="modal-overlay" id="sig-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Worker Signature</div>
+    <div class="modal-canvas-wrap">
+      <canvas id="modal-cv"></canvas>
+      <span class="modal-canvas-ph" id="modal-ph">Sign here</span>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-m btn-m-clear"  onclick="modalClear()">Clear</button>
+      <button class="btn-m btn-m-cancel" onclick="modalClose()">Cancel</button>
+      <button class="btn-m btn-m-done"   onclick="modalDone()">Done ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   SIGNATURE PADS  (conducted-by + modal)
+═══════════════════════════════════════════ */
+const pads = {};
+
+function initSig(id) {
+  const cv = document.getElementById(id);
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1.6;
+  ctx.lineCap = ctx.lineJoin = 'round';
+  const p = { cv, ctx, dn: false, lx: 0, ly: 0, ink: false };
+  pads[id] = p;
+
+  function pt(e) {
+    const r = cv.getBoundingClientRect();
+    const s = e.touches ? e.touches[0] : e;
+    return {
+      x: (s.clientX - r.left) * (cv.width  / r.width),
+      y: (s.clientY - r.top)  * (cv.height / r.height)
+    };
+  }
+  function dn(e) { p.dn = true; const q = pt(e); p.lx = q.x; p.ly = q.y; }
+  function mv(e) {
+    if (!p.dn) return; e.preventDefault();
+    const q = pt(e);
+    ctx.beginPath(); ctx.moveTo(p.lx, p.ly); ctx.lineTo(q.x, q.y); ctx.stroke();
+    p.lx = q.x; p.ly = q.y; p.ink = true;
+    const ph = cv.closest('.sig-wrap')?.querySelector('.sig-ph');
+    if (ph) ph.style.opacity = '0';
+  }
+  cv.addEventListener('mousedown',  dn);
+  cv.addEventListener('mousemove',  mv);
+  cv.addEventListener('mouseup',    () => p.dn = false);
+  cv.addEventListener('mouseleave', () => p.dn = false);
+  cv.addEventListener('touchstart', e => { e.preventDefault(); dn(e); }, { passive: false });
+  cv.addEventListener('touchmove',  mv,  { passive: false });
+  cv.addEventListener('touchend',   () => p.dn = false);
+}
+
+/* Register a canvas in pads WITHOUT adding draw/touch listeners.
+   Worker attendance cells are display-only — signing happens in the modal.
+   Keeping them free of touch listeners lets the tap bubble up to the
+   parent <td> onclick so the modal opens correctly on mobile. */
+function registerSig(id) {
+  const cv = document.getElementById(id);
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1.6;
+  ctx.lineCap = ctx.lineJoin = 'round';
+  pads[id] = { cv, ctx, dn: false, lx: 0, ly: 0, ink: false };
+}
+
+function clrSig(id) {
+  const p = pads[id]; if (!p) return;
+  p.ctx.clearRect(0, 0, p.cv.width, p.cv.height);
+  p.ink = false;
+  const ph = p.cv.parentElement?.querySelector('.sig-ph, .att-sig-ph');
+  if (ph) ph.style.opacity = '1';
+}
+
+/* ═══════════════════════════════════════════
+   MODAL SIGNATURE PAD
+═══════════════════════════════════════════ */
+let modalTarget = null;
+const mPad = { dn: false, lx: 0, ly: 0, ink: false };
+
+function initModal() {
+  const cv = document.getElementById('modal-cv');
+
+  // NOTE: canvas is NOT sized here — the modal is display:none at init time
+  // so clientWidth = 0. Sizing happens inside openModal() after the modal
+  // is made visible. See sizeModalCanvas().
+
+  function styleCtx() {
+    const ctx = cv.getContext('2d');
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 2;
+    ctx.lineCap = ctx.lineJoin = 'round';
+  }
+
+  function pt(e) {
+    const r = cv.getBoundingClientRect();
+    const s = e.touches ? e.touches[0] : e;
+    return {
+      x: (s.clientX - r.left) * (cv.width  / r.width),
+      y: (s.clientY - r.top)  * (cv.height / r.height)
+    };
+  }
+  function dn(e) { e.preventDefault(); mPad.dn = true; const q = pt(e); mPad.lx = q.x; mPad.ly = q.y; }
+  function mv(e) {
+    if (!mPad.dn) return; e.preventDefault();
+    const q = pt(e);
+    styleCtx();
+    const ctx = cv.getContext('2d');
+    ctx.beginPath(); ctx.moveTo(mPad.lx, mPad.ly); ctx.lineTo(q.x, q.y); ctx.stroke();
+    mPad.lx = q.x; mPad.ly = q.y; mPad.ink = true;
+    document.getElementById('modal-ph').style.opacity = '0';
+  }
+  cv.addEventListener('mousedown',  dn);
+  cv.addEventListener('mousemove',  mv);
+  cv.addEventListener('mouseup',    () => mPad.dn = false);
+  cv.addEventListener('mouseleave', () => mPad.dn = false);
+  cv.addEventListener('touchstart', dn, { passive: false });
+  cv.addEventListener('touchmove',  mv, { passive: false });
+  cv.addEventListener('touchend',   () => mPad.dn = false);
+}
+
+// Called every time the modal opens — sizes the canvas now that it is visible.
+function sizeModalCanvas() {
+  const cv = document.getElementById('modal-cv');
+  const w  = cv.parentElement.clientWidth || 300;
+  cv.width  = w;
+  cv.height = Math.round(w * 0.45);
+  const ctx = cv.getContext('2d');
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 2;
+  ctx.lineCap = ctx.lineJoin = 'round';
+}
+
+function openModal(id, label) {
+  modalTarget = id;
+  document.getElementById('modal-title').textContent = label + ' — Sign below';
+
+  // Show modal FIRST so the canvas has real layout dimensions
+  document.getElementById('sig-modal').classList.add('open');
+
+  // Now size the canvas correctly (clientWidth is valid once modal is visible)
+  sizeModalCanvas();
+
+  // Clear canvas and reset state
+  const cv  = document.getElementById('modal-cv');
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  mPad.ink = false;
+  document.getElementById('modal-ph').style.opacity = '1';
+
+  // If already signed, copy existing sig into modal canvas (scaled up)
+  const src = pads[id];
+  if (src && src.ink) {
+    ctx.drawImage(src.cv, 0, 0, cv.width, cv.height);
+    mPad.ink = true;
+    document.getElementById('modal-ph').style.opacity = '0';
+  }
+}
+
+function modalClear() {
+  const cv = document.getElementById('modal-cv');
+  cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+  mPad.ink = false;
+  document.getElementById('modal-ph').style.opacity = '1';
+}
+
+function modalClose() {
+  document.getElementById('sig-modal').classList.remove('open');
+  modalTarget = null;
+}
+
+function modalDone() {
+  if (!modalTarget) { modalClose(); return; }
+  const dst = pads[modalTarget];
+  if (!dst) { modalClose(); return; }
+
+  const cv = document.getElementById('modal-cv');
+  dst.ctx.clearRect(0, 0, dst.cv.width, dst.cv.height);
+
+  if (mPad.ink) {
+    dst.ctx.drawImage(cv, 0, 0, dst.cv.width, dst.cv.height);
+    dst.ink = true;
+    // Hide "Tap to sign" placeholder
+    const ph = dst.cv.parentElement?.querySelector('.att-sig-ph');
+    if (ph) ph.style.opacity = '0';
+  } else {
+    dst.ink = false;
+    const ph = dst.cv.parentElement?.querySelector('.att-sig-ph');
+    if (ph) ph.style.opacity = '1';
+  }
+  modalClose();
+}
+
+// Close modal when clicking the dark overlay (outside the box)
+document.getElementById('sig-modal').addEventListener('click', function(e) {
+  if (e.target === this) modalClose();
+});
+
+/* ═══════════════════════════════════════════
+   CHECKBOX PAIRS
+═══════════════════════════════════════════ */
+const pairs = { q1y:'q1n', q1n:'q1y', q2y:'q2n', q2n:'q2y' };
+document.addEventListener('change', e => {
+  if (e.target.type === 'checkbox' && e.target.checked && pairs[e.target.id])
+    document.getElementById(pairs[e.target.id]).checked = false;
+});
+
+/* ═══════════════════════════════════════════
+   BUILD ATTENDANCE TABLE
+═══════════════════════════════════════════ */
+let attRowCount = 0;
+
+function buildAttRow(i) {
+  const tbody = document.getElementById('att-body');
+  const tr = document.createElement('tr');
+  tr.id = `atr${i}`;
+  tr.innerHTML = `
+    <td class="sn-td">${i}</td>
+    <td class="nm-td"><input type="text" id="wn${i}" placeholder=""></td>
+    <td class="sig-td" id="std${i}" onclick="openModal('ws${i}','Worker ${i}')">
+      <canvas id="ws${i}" width="150" height="36"></canvas>
+      <span class="att-sig-ph">Tap to sign</span>
+    </td>`;
+  tbody.appendChild(tr);
+  registerSig(`ws${i}`);
+}
+
+function buildAtt() {
+  for (let i = 1; i <= 20; i++) {
+    buildAttRow(i);
+    attRowCount = i;
+  }
+  updateAttLabel();
+}
+
+function addAttRow() {
+  attRowCount++;
+  buildAttRow(attRowCount);
+  updateAttLabel();
+}
+
+function updateAttLabel() {
+  const lbl = document.getElementById('att-count-lbl');
+  if (lbl) lbl.textContent = `${attRowCount} row${attRowCount !== 1 ? 's' : ''}`;
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+function resetForm() {
+  if (!confirm('Reset all form data? This cannot be undone.')) return;
+  document.querySelectorAll('input[type=text],input[type=date],input[type=time],textarea')
+    .forEach(el => el.value = '');
+  document.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+  Object.keys(pads).forEach(id => {
+    clrSig(id);
+    const ph = document.querySelector(`#std${id.replace('ws','')} .att-sig-ph`);
+    if (ph) ph.style.opacity = '1';
+  });
+  // Reset textarea height
+  const ta = document.getElementById('subjects');
+  if (ta) { ta.style.height = 'auto'; }
+  // Reset photos
+  uploadedPhotos = [];
+  document.getElementById('photo-preview').innerHTML = '';
+  document.getElementById('photo-input').value = '';
+  showToast('Form has been reset.');
+}
+
+/* ═══════════════════════════════════════════
+   SAVE JSON
+═══════════════════════════════════════════ */
+function saveData() {
+  const v  = id => document.getElementById(id)?.value ?? '';
+  const cb = id => document.getElementById(id)?.checked ?? false;
+  const sd = id => pads[id]?.ink ? pads[id].cv.toDataURL() : '';
+  const workers = [];
+  for (let i = 1; i <= attRowCount; i++) {
+    const n = v(`wn${i}`), s = sd(`ws${i}`);
+    if (n || s) workers.push({ sn: i, name: n, signature: s });
+  }
+  const data = {
+    savedAt: new Date().toISOString(),
+    project: v('project'), date: v('date'),
+    conductedBy: { name: v('c-name'), designation: v('c-desig'), signature: sd('sig0') },
+    checklist: {
+      fitForWork:  cb('q1y') ? 'Yes' : cb('q1n') ? 'No' : '',
+      ppeEquipped: cb('q2y') ? 'Yes' : cb('q2n') ? 'No' : '',
+    },
+    subjectsDiscussed: v('subjects'),
+    workers,
+  };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  Object.assign(document.createElement('a'),{
+    href: url,
+    download: `toolbox-simplified-${(data.date||'undated').replace(/-/g,'')}.json`
+  }).click();
+  URL.revokeObjectURL(url);
+  showToast('Saved as JSON.');
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* ═══════════════════════════════════════════
+   TEXTAREA AUTO-RESIZE
+═══════════════════════════════════════════ */
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+/* ═══════════════════════════════════════════
+   PHOTO UPLOAD
+═══════════════════════════════════════════ */
+let uploadedPhotos = [];
+
+function initPhotoUpload() {
+  const input = document.getElementById('photo-input');
+  input.addEventListener('change', function() {
+    Array.from(this.files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        uploadedPhotos.push(dataUrl);
+        addPhotoThumb(dataUrl, uploadedPhotos.length - 1);
+      };
+      reader.readAsDataURL(file);
+    });
+    this.value = '';
+  });
+}
+
+function addPhotoThumb(dataUrl, idx) {
+  const wrap = document.createElement('div');
+  wrap.className = 'photo-thumb-wrap';
+  wrap.dataset.idx = idx;
+  wrap.innerHTML = `<img src="${dataUrl}" alt="Photo ${idx+1}">
+    <button class="photo-thumb-remove" onclick="removePhoto(this)" title="Remove">&times;</button>`;
+  document.getElementById('photo-preview').appendChild(wrap);
+}
+
+function removePhoto(btn) {
+  const wrap = btn.closest('.photo-thumb-wrap');
+  const idx = parseInt(wrap.dataset.idx);
+  uploadedPhotos[idx] = null;
+  wrap.remove();
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('date').valueAsDate = new Date();
+  registerSig('sig0');
+  initModal();
+  buildAtt();
+
+  // Auto-resize subjects textarea
+  const ta = document.getElementById('subjects');
+  ta.addEventListener('input', () => autoResize(ta));
+
+  // Photo upload
+  initPhotoUpload();
+});
+</script>
+</body>
+</html>
