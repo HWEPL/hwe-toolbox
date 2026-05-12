@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Briefing Form – HWE-QEHSP-11-F04</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      background: #c8c8c8;
+      color: #000;
+      padding: 30px 50px;
+    }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 18px 20px 14px;
+      box-shadow: 0 3px 16px rgba(0,0,0,0.25);
+    }
+
+    /* ══════════════════════════════
+       HEADER
+    ══════════════════════════════ */
+    .hdr { width: 100%; border-collapse: collapse; border: 1px solid #000; }
+    .hdr td { border: 1px solid #000; padding: 0; vertical-align: middle; }
+
+    .td-company {
+      text-align: center; font-weight: 700; font-size: 13px;
+      line-height: 1.6; padding: 8px 10px !important; width: 27%;
+    }
+    .td-sysforms {
+      background-color: #1a3c6e; color: #fff; text-align: center;
+      font-weight: 700; font-size: 12px; letter-spacing: 1.5px;
+      padding: 7px 10px !important; border-bottom: 1px solid #fff !important;
+    }
+    .td-formtitle {
+      text-align: center; font-weight: 700; font-size: 15px;
+      padding: 8px 10px !important;
+    }
+    .td-meta { text-align: center; font-size: 12px; padding: 5px 8px !important; }
+
+    /* ══════════════════════════════
+       MAIN FORM
+    ══════════════════════════════ */
+    .form-tbl {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid #000; border-top: none;
+    }
+    .form-tbl td {
+      border: 1px solid #000; padding: 7px 9px;
+      vertical-align: middle; font-size: 14px;
+    }
+    .fi {
+      border: none; outline: none; width: 100%;
+      font-family: inherit; font-size: 14px;
+      padding: 1px 2px; background: transparent; color: #000;
+    }
+    .fi:focus { background: #eef3ff; }
+    .lbl { white-space: nowrap; width: 200px; }
+
+    /* Auto-growing textarea (Title of Briefing) */
+    textarea.fi-grow {
+      resize: none;
+      overflow: hidden;
+      min-height: 22px;
+      line-height: 1.45;
+      display: block;
+      font-family: inherit;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    /* Signature row for Person Conducting */
+    .td-conductor-sig {
+      padding: 0 !important;
+      vertical-align: middle;
+    }
+    .sig-conductor-wrap {
+      width: 100%;
+      cursor: pointer;
+      background: #fafafa;
+      position: relative;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sig-conductor-wrap canvas {
+      display: block; width: 100%; height: 50px;
+    }
+    .sig-conductor-wrap:hover { background: #f0f4ff; }
+    .sig-ph {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 11px; color: #bbb;
+      pointer-events: none; white-space: nowrap;
+    }
+
+    /* ══════════════════════════════
+       ATTENDANCE TABLE
+    ══════════════════════════════ */
+    .att { width: 100%; border-collapse: collapse; }
+    .att th {
+      border: 1px solid #000; padding: 7px 7px;
+      font-weight: 700; font-size: 14px; background: #fff;
+      text-align: center;
+    }
+    .att td { border: 1px solid #000; padding: 0; vertical-align: middle; }
+    .att .nm-td input,
+    .att .dg-td input {
+      border: none; outline: none; width: 100%;
+      font-family: inherit; font-size: 13px;
+      padding: 8px 8px; background: transparent;
+    }
+    .att .nm-td input:focus,
+    .att .dg-td input:focus { background: #eef3ff; }
+
+    /* Signature cell — tap-to-open */
+    .att .sig-td {
+      width: 33%; height: 40px; padding: 0 !important;
+      position: relative; cursor: pointer;
+    }
+    .att .sig-td canvas { display: block; width: 100%; height: 40px; }
+    .att-sig-ph {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 10px; color: #bbb;
+      pointer-events: none; white-space: nowrap;
+    }
+    .att .sig-td:hover { background: #f0f4ff; }
+
+    .att .nm-col { width: 34%; }
+    .att .dg-col { width: 33%; }
+    .att .sg-col { width: 33%; }
+
+    /* ══════════════════════════════
+       SIGNATURE MODAL
+    ══════════════════════════════ */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65); z-index: 2000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 10px;
+      padding: 20px 22px 18px;
+      width: min(520px, 95vw);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+    .modal-title {
+      font-size: 15px; font-weight: 700;
+      color: #1a3c6e; margin-bottom: 12px;
+    }
+    .modal-canvas-wrap {
+      position: relative;
+      border: 1.5px solid #aaa; border-radius: 6px;
+      background: #fafafa; overflow: hidden;
+    }
+    #modal-cv {
+      display: block; width: 100%;
+      height: 220px; cursor: crosshair; touch-action: none;
+    }
+    .modal-canvas-ph {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 13px; color: #ccc; pointer-events: none;
+    }
+    .modal-footer {
+      display: flex; gap: 10px;
+      justify-content: flex-end; margin-top: 14px;
+    }
+    .btn-m {
+      padding: 9px 22px; border-radius: 5px;
+      font: 600 14px/1 Arial, sans-serif;
+      cursor: pointer; border: none;
+    }
+    .btn-m-clear  { background: #f5f5f5; color: #555; border: 1px solid #ccc; }
+    .btn-m-clear:hover  { background: #ffe0e0; color: #c00; border-color: #c00; }
+    .btn-m-cancel { background: #eee; color: #444; border: 1px solid #bbb; }
+    .btn-m-cancel:hover { background: #ddd; }
+    .btn-m-done   { background: #1a3c6e; color: #fff; }
+    .btn-m-done:hover   { background: #14305a; }
+
+    /* ══════════════════════════════
+       ACTION BUTTONS
+    ══════════════════════════════ */
+    .actions {
+      display: flex; gap: 10px; justify-content: flex-end;
+      padding: 12px 0 2px; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 7px 18px; border-radius: 3px;
+      font: 600 12px/1 Arial, sans-serif; cursor: pointer; border: none;
+    }
+    .btn-reset { background: #eee; color: #333; border: 1px solid #bbb; }
+    .btn-reset:hover { background: #ddd; }
+    .btn-add  { background: #444; color: #fff; }
+    .btn-add:hover { background: #222; }
+    .btn-print { background: #1a3c6e; color: #fff; }
+    .btn-print:hover { background: #14305a; }
+    .btn-save  { background: #256e35; color: #fff; }
+    .btn-save:hover { background: #1b5228; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 18px; right: 18px;
+      background: #256e35; color: #fff;
+      padding: 8px 15px; border-radius: 4px;
+      font-size: 13px; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s; z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+
+    /* ══════════════════════════════
+       PRINT — A4 page
+    ══════════════════════════════ */
+    @page { size: A4 portrait; margin: 9mm 11mm; }
+
+    @media print {
+      html, body {
+        background: #fff; padding: 0; margin: 0;
+        font-size: 13px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .page { box-shadow: none; padding: 0; max-width: 100%; }
+      .actions    { display: none; }
+      .modal-overlay { display: none !important; }
+      .att-sig-ph, .sig-ph { display: none; }
+
+      .td-sysforms { background-color: #1a3c6e !important; color: #fff !important; }
+
+      /* Header */
+      .hdr td       { font-size: 11px !important; padding: 4px 6px !important; }
+      .td-meta      { font-size: 11px !important; padding: 4px 5px !important; }
+      .td-company   { font-size: 11px !important; padding: 6px 8px !important; }
+      .td-formtitle { font-size: 13px !important; padding: 5px 8px !important; }
+      .td-sysforms  { font-size: 11px !important; padding: 5px 8px !important; }
+
+      /* Form body */
+      .form-tbl td    { font-size: 12px !important; padding: 5px 7px !important; }
+      .fi             { font-size: 12px !important; }
+
+      /* Attendance */
+      .att th             { font-size: 12px !important; padding: 4px 5px !important; }
+      .att .nm-td input,
+      .att .dg-td input   { font-size: 11px !important; padding: 4px 5px !important; }
+      .att .sig-td        { height: 32px !important; }
+      .att .sig-td canvas { height: 32px !important; }
+
+      .sig-conductor-wrap        { min-height: 40px !important; }
+      .sig-conductor-wrap canvas { height: 40px !important; }
+    }
+
+    /* ══════════════════════════════
+       MOBILE
+    ══════════════════════════════ */
+    @media (max-width: 580px) {
+      body { padding: 8px 4px; font-size: 13px; }
+      .page { padding: 10px 8px 10px; }
+
+      .td-company { font-size: 11px !important; padding: 5px 5px !important; line-height: 1.3 !important; }
+      .td-sysforms { font-size: 10px !important; padding: 4px 4px !important; letter-spacing: 1px; }
+      .td-formtitle { font-size: 12px !important; padding: 5px 5px !important; }
+      .td-meta { font-size: 10px !important; padding: 3px 3px !important; }
+
+      .form-tbl td { padding: 6px 6px; font-size: 13px; }
+      .lbl { width: 130px; font-size: 12px; white-space: normal; }
+      .fi { font-size: 13px; }
+
+      .sig-conductor-wrap { min-height: 60px; }
+      .sig-conductor-wrap canvas { height: 60px; }
+
+      .att th { font-size: 11px; padding: 5px 3px; }
+      .att .nm-td input,
+      .att .dg-td input { font-size: 12px; padding: 7px 5px; }
+      .att .sig-td { height: 44px; }
+      .att .sig-td canvas { height: 44px; }
+      .att-sig-ph { font-size: 9px; }
+
+      .actions { gap: 6px; justify-content: stretch; }
+      .btn { flex: 1; padding: 10px 10px; font-size: 12px; min-width: 80px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══════════ HEADER ══════════ -->
+  <table class="hdr">
+    <tbody>
+      <tr>
+        <td class="td-company" rowspan="2">HWEE WAH<br>ENGINEERING PTE LTD</td>
+        <td class="td-sysforms">SYSTEM FORMS</td>
+      </tr>
+      <tr>
+        <td class="td-formtitle">BRIEFING FORM</td>
+      </tr>
+      <tr>
+        <td class="td-meta" style="border-right:1px solid #000;">HWE-QEHSP-11-F04</td>
+        <td style="padding:0; border:none;">
+          <table style="width:100%; border-collapse:collapse; height:100%;">
+            <tr>
+              <td class="td-meta">Date: 03.07.2023</td>
+              <td class="td-meta" style="border-left:1px solid #000;">Revision 00</td>
+              <td class="td-meta" style="border-left:1px solid #000;">Page 1 of 1</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══════════ TOP FIELDS ══════════ -->
+  <table class="form-tbl">
+    <tbody>
+      <tr>
+        <td class="lbl">Date of Briefing:</td>
+        <td><input class="fi" type="date" id="date-briefing" /></td>
+      </tr>
+      <tr>
+        <td class="lbl" style="vertical-align: top; padding-top: 10px;">Title of Briefing:</td>
+        <td><textarea class="fi fi-grow" id="title-briefing" rows="1" placeholder="Enter title / points..."></textarea></td>
+      </tr>
+      <tr>
+        <td class="lbl">Person Conducting Briefing:</td>
+        <td><input class="fi" type="text" id="person-conducting" /></td>
+      </tr>
+      <tr>
+        <td class="lbl">Signature</td>
+        <td class="td-conductor-sig">
+          <div class="sig-conductor-wrap" onclick="openModal('sig0','Person Conducting Briefing')">
+            <canvas id="sig0" width="500" height="50"></canvas>
+            <span class="sig-ph">Tap to sign</span>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══════════ ATTENDANCE TABLE ══════════ -->
+  <table class="att" style="border-top: none;">
+    <thead>
+      <tr>
+        <th class="nm-col">Name</th>
+        <th class="dg-col">Designation</th>
+        <th class="sg-col">Signature</th>
+      </tr>
+    </thead>
+    <tbody id="att-body"></tbody>
+  </table>
+
+  <!-- ══════════ BUTTONS ══════════ -->
+  <div class="actions">
+    <button class="btn btn-add" onclick="addRow()">+ Add Row</button>
+    <button class="btn btn-reset" onclick="resetForm()">Reset Form</button>
+    <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+    <button class="btn btn-save"  onclick="saveData()">Save (JSON)</button>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ══════════ SIGNATURE MODAL ══════════ -->
+<div class="modal-overlay" id="sig-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Signature</div>
+    <div class="modal-canvas-wrap">
+      <canvas id="modal-cv"></canvas>
+      <span class="modal-canvas-ph" id="modal-ph">Sign here</span>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-m btn-m-clear"  onclick="modalClear()">Clear</button>
+      <button class="btn-m btn-m-cancel" onclick="modalClose()">Cancel</button>
+      <button class="btn-m btn-m-done"   onclick="modalDone()">Done ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   SIGNATURE PAD REGISTRY
+═══════════════════════════════════════════ */
+const pads = {};
+
+/* Register a canvas (no draw listeners — modal handles signing) */
+function registerSig(id) {
+  const cv = document.getElementById(id);
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1.6;
+  ctx.lineCap = ctx.lineJoin = 'round';
+  pads[id] = { cv, ctx, dn: false, lx: 0, ly: 0, ink: false };
+}
+
+function clrSig(id) {
+  const p = pads[id]; if (!p) return;
+  p.ctx.clearRect(0, 0, p.cv.width, p.cv.height);
+  p.ink = false;
+  const ph = p.cv.parentElement?.querySelector('.sig-ph, .att-sig-ph');
+  if (ph) ph.style.opacity = '1';
+}
+
+/* ═══════════════════════════════════════════
+   MODAL SIGNATURE PAD
+═══════════════════════════════════════════ */
+let modalTarget = null;
+const mPad = { dn: false, lx: 0, ly: 0, ink: false };
+
+function initModal() {
+  const cv = document.getElementById('modal-cv');
+
+  function styleCtx() {
+    const ctx = cv.getContext('2d');
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 2;
+    ctx.lineCap = ctx.lineJoin = 'round';
+  }
+
+  function pt(e) {
+    const r = cv.getBoundingClientRect();
+    const s = e.touches ? e.touches[0] : e;
+    return {
+      x: (s.clientX - r.left) * (cv.width  / r.width),
+      y: (s.clientY - r.top)  * (cv.height / r.height)
+    };
+  }
+  function dn(e) { e.preventDefault(); mPad.dn = true; const q = pt(e); mPad.lx = q.x; mPad.ly = q.y; }
+  function mv(e) {
+    if (!mPad.dn) return; e.preventDefault();
+    const q = pt(e);
+    styleCtx();
+    const ctx = cv.getContext('2d');
+    ctx.beginPath(); ctx.moveTo(mPad.lx, mPad.ly); ctx.lineTo(q.x, q.y); ctx.stroke();
+    mPad.lx = q.x; mPad.ly = q.y; mPad.ink = true;
+    document.getElementById('modal-ph').style.opacity = '0';
+  }
+  cv.addEventListener('mousedown',  dn);
+  cv.addEventListener('mousemove',  mv);
+  cv.addEventListener('mouseup',    () => mPad.dn = false);
+  cv.addEventListener('mouseleave', () => mPad.dn = false);
+  cv.addEventListener('touchstart', dn, { passive: false });
+  cv.addEventListener('touchmove',  mv, { passive: false });
+  cv.addEventListener('touchend',   () => mPad.dn = false);
+}
+
+function sizeModalCanvas() {
+  const cv = document.getElementById('modal-cv');
+  const w  = cv.parentElement.clientWidth || 300;
+  cv.width  = w;
+  cv.height = Math.round(w * 0.45);
+  const ctx = cv.getContext('2d');
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 2;
+  ctx.lineCap = ctx.lineJoin = 'round';
+}
+
+function openModal(id, label) {
+  modalTarget = id;
+  document.getElementById('modal-title').textContent = label + ' — Sign below';
+
+  document.getElementById('sig-modal').classList.add('open');
+  sizeModalCanvas();
+
+  const cv  = document.getElementById('modal-cv');
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  mPad.ink = false;
+  document.getElementById('modal-ph').style.opacity = '1';
+
+  const src = pads[id];
+  if (src && src.ink) {
+    ctx.drawImage(src.cv, 0, 0, cv.width, cv.height);
+    mPad.ink = true;
+    document.getElementById('modal-ph').style.opacity = '0';
+  }
+}
+
+function modalClear() {
+  const cv = document.getElementById('modal-cv');
+  cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+  mPad.ink = false;
+  document.getElementById('modal-ph').style.opacity = '1';
+}
+
+function modalClose() {
+  document.getElementById('sig-modal').classList.remove('open');
+  modalTarget = null;
+}
+
+function modalDone() {
+  if (!modalTarget) { modalClose(); return; }
+  const dst = pads[modalTarget];
+  if (!dst) { modalClose(); return; }
+
+  const cv = document.getElementById('modal-cv');
+
+  // Resize destination canvas to match its current display size for crisp output
+  const rect = dst.cv.getBoundingClientRect();
+  if (rect.width > 0 && rect.height > 0) {
+    dst.cv.width  = Math.round(rect.width);
+    dst.cv.height = Math.round(rect.height);
+    dst.ctx = dst.cv.getContext('2d');
+    dst.ctx.strokeStyle = '#111'; dst.ctx.lineWidth = 1.6;
+    dst.ctx.lineCap = dst.ctx.lineJoin = 'round';
+  }
+
+  dst.ctx.clearRect(0, 0, dst.cv.width, dst.cv.height);
+
+  if (mPad.ink) {
+    dst.ctx.drawImage(cv, 0, 0, dst.cv.width, dst.cv.height);
+    dst.ink = true;
+    const ph = dst.cv.parentElement?.querySelector('.att-sig-ph, .sig-ph');
+    if (ph) ph.style.opacity = '0';
+  } else {
+    dst.ink = false;
+    const ph = dst.cv.parentElement?.querySelector('.att-sig-ph, .sig-ph');
+    if (ph) ph.style.opacity = '1';
+  }
+  modalClose();
+}
+
+document.getElementById('sig-modal').addEventListener('click', function(e) {
+  if (e.target === this) modalClose();
+});
+
+/* ═══════════════════════════════════════════
+   BUILD ATTENDANCE TABLE
+═══════════════════════════════════════════ */
+const INITIAL_ROWS = 15;
+let rowCount = 0;
+
+function makeRow(i) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="nm-td"><input type="text" id="bn${i}" placeholder=""></td>
+    <td class="dg-td"><input type="text" id="bd${i}" placeholder=""></td>
+    <td class="sig-td" id="std${i}" onclick="openModal('bs${i}','Row ${i}')">
+      <canvas id="bs${i}"></canvas>
+      <span class="att-sig-ph">Tap to sign</span>
+    </td>`;
+  return tr;
+}
+
+function buildAtt() {
+  const tbody = document.getElementById('att-body');
+  for (let i = 1; i <= INITIAL_ROWS; i++) {
+    tbody.appendChild(makeRow(i));
+    registerSig(`bs${i}`);
+    rowCount = i;
+  }
+}
+
+function addRow() {
+  const tbody = document.getElementById('att-body');
+  rowCount += 1;
+  tbody.appendChild(makeRow(rowCount));
+  registerSig(`bs${rowCount}`);
+  showToast(`Added row ${rowCount}.`);
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+function resetForm() {
+  if (!confirm('Reset all form data? This cannot be undone.')) return;
+  document.querySelectorAll('input[type=text],input[type=date],textarea')
+    .forEach(el => el.value = '');
+  document.querySelectorAll('textarea.fi-grow').forEach(autoGrow);
+  Object.keys(pads).forEach(id => clrSig(id));
+  showToast('Form has been reset.');
+}
+
+/* ═══════════════════════════════════════════
+   SAVE JSON
+═══════════════════════════════════════════ */
+function saveData() {
+  const v  = id => document.getElementById(id)?.value ?? '';
+  const sd = id => pads[id]?.ink ? pads[id].cv.toDataURL() : '';
+  const attendees = [];
+  for (let i = 1; i <= rowCount; i++) {
+    const n = v(`bn${i}`), d = v(`bd${i}`), s = sd(`bs${i}`);
+    if (n || d || s) attendees.push({ sn: i, name: n, designation: d, signature: s });
+  }
+  const data = {
+    savedAt: new Date().toISOString(),
+    dateOfBriefing: v('date-briefing'),
+    titleOfBriefing: v('title-briefing'),
+    personConducting: { name: v('person-conducting'), signature: sd('sig0') },
+    attendees,
+  };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  Object.assign(document.createElement('a'),{
+    href: url,
+    download: `briefing-form-${(data.dateOfBriefing||'undated').replace(/-/g,'')}.json`
+  }).click();
+  URL.revokeObjectURL(url);
+  showToast('Saved as JSON.');
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* ═══════════════════════════════════════════
+   AUTO-GROW TEXTAREA
+═══════════════════════════════════════════ */
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = (el.scrollHeight) + 'px';
+}
+function initAutoGrow() {
+  document.querySelectorAll('textarea.fi-grow').forEach(el => {
+    autoGrow(el);
+    el.addEventListener('input', () => autoGrow(el));
+    el.addEventListener('change', () => autoGrow(el));
+  });
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('date-briefing').valueAsDate = new Date();
+  registerSig('sig0');
+  initModal();
+  buildAtt();
+  initAutoGrow();
+});
+
+/* Re-grow on window resize so wrap recalculates correctly */
+window.addEventListener('resize', () => {
+  document.querySelectorAll('textarea.fi-grow').forEach(autoGrow);
+});
+</script>
+</body>
+</html>
