@@ -385,12 +385,18 @@
   <!-- ══════════ MAIN FORM ══════════ -->
   <table class="form-tbl">
     <colgroup>
-      <col style="width:105px;">
+      <col style="width:130px;">
       <col>
       <col style="width:58px;">
       <col style="width:120px;">
     </colgroup>
     <tbody>
+
+      <!-- Company Name -->
+      <tr>
+        <td class="lbl">Company Name:</td>
+        <td colspan="3"><input class="fi" type="text" id="company" /></td>
+      </tr>
 
       <!-- Project -->
       <tr>
@@ -775,6 +781,7 @@ function saveData() {
   }
   const data = {
     savedAt: new Date().toISOString(),
+    companyName: v('company'),
     project: v('project'), date: v('date'),
     conductedBy: { name: v('c-name'), designation: v('c-desig'), signature: sd('sig0') },
     checklist: {
